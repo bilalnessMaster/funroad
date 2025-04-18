@@ -36,6 +36,7 @@ interface NavbarItemProps {
     isActive?: boolean
 }
 const Navbar = () => {
+
     const pathName = usePathname()
     const [isSideBarOpen, setIsSideBarOpen] = useState(false)
 
@@ -59,10 +60,8 @@ const Navbar = () => {
                     variant='secondary'
                     className='border-l border-t-0 border-b-0 border-r-0  px-12 h-full  rounded-none bg-white hover:bg-pink-400 transition-colors text-lg'
                 >
-
                     <Link href={'/login'}>
                         Login
-
                     </Link>
                 </Button>
                 <Button
@@ -70,17 +69,16 @@ const Navbar = () => {
                 >
                     <Link href='/sign-up'>
                         Start selling
-
                     </Link>
                 </Button>
             </div>
             <div className='flex lg:hidden items-center'>
                 <Button
                     variant={'ghost'}
-                    className='size-12 border-transparent bg-white '
+                    className='size-12 border-transparent bg-white'
                     onClick={() => setIsSideBarOpen(true)}
                 >
-                    <MenuIcon  />
+                    <MenuIcon />
                 </Button>
             </div>
         </nav>
