@@ -6,7 +6,7 @@ interface Props {
 }
 const Categories = ({data} : Props) => {
   return (
-    <div className=''>
+    <div className='flex flex-nowrap items-center gap-2'>
         {
             data.map((category : Category) =>(
                 <div key={category.id}>

@@ -5,7 +5,7 @@ import SearchFilter from './search-filter'
 
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
-import { CategoriesSelect, Category } from '@/payload-types'
+import {  Category } from '@/payload-types'
 interface Props {
   children: React.ReactNode
 }
