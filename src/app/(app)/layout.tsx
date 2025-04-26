@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import { DM_Sans} from "next/font/google";
 import "./globals.css";
+// let test = [
+// {sd : "bilal"},
+// {sd : "bilal"},
+// {sd : "bilal"},
+// {sd : "bilal"},
+// {sd : "bilal"},
+//]
 
 const dmSans = DM_Sans({
 subsets : ['latin']
