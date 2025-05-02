@@ -1,15 +1,13 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { Category } from '@/payload-types'
 import React, { useRef, useState } from 'react'
 import { useDropdownPosition } from './use-hook-dropdown'
 import { SubCategoryMenu } from './subcategoryMenu'
 import Link from 'next/link'
-import { CustomCategory } from '../types'
-
+import { CategoriesGetManyOutput } from '@/modules/categories/types'
 interface Props {
-  category: CustomCategory,
+  category: CategoriesGetManyOutput[1],
   isActive: boolean,
   isNavigationHovered: boolean
 }
@@ -44,7 +42,7 @@ const CategoryDropdown = ({
 
     >
       <div className='relative w-fit'>
-        <Button onClick={toggelDropdown}  variant={'elevated'} className={cn('h-11 px-4 border-transparent rounded-full hover:bg-white hover:border-primary text-black', { 'bg-white hover:border-primary': !isActive && !isNavigationHovered , 'bg-white border-primary  shadow-[4px_4px_0px_0px_rgba(0,0,0,,1)] -translate-x-[4px] -translate-y-[4px]' : isOpen})} >
+        <Button onClick={toggelDropdown}  variant={'elevated'} className={cn('h-11 px-4 bg-none border-transparent rounded-full hover:bg-white hover:border-primary text-black', { 'bg-none hover:border-primary': !isActive && !isNavigationHovered , 'bg-white border-primary  shadow-[4px_4px_0px_0px_rgba(0,0,0,,1)] -translate-x-[4px] -translate-y-[4px]' : isOpen})} >
           <Link href={`/${category.slug === 'all' ? "" : category.slug}`}>
           {category.name}
           
