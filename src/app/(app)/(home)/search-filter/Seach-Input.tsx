@@ -7,16 +7,15 @@ import CategoriesSidebar from './CategoriesSidebar';
 import { Button } from '@/components/ui/button';
 interface Props  {
   disabled ?: boolean;
-  data : CustomCategory[]
 }
-const SeachInput = ({disabled , data} : Props) => {
+const SeachInput = ({disabled } : Props) => {
 const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
     <div className='flex items-center gap-2 w-full'>
-      <CategoriesSidebar data={data} open={isSidebarOpen} onChange={setIsSidebarOpen}  />
+      <CategoriesSidebar  open={isSidebarOpen} onChange={setIsSidebarOpen}  />
       <div className='relative w-full '>
         <SearchIcon className=' absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-500' />
-        <Input className='pl-8 ' placeholder='Seach products' />
+        <Input className='pl-8 ' placeholder='Seach products'  disabled={disabled}/>
       </div>
       {/* to do categories view all */}
       <Button 
