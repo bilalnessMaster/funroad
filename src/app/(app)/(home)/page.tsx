@@ -5,11 +5,10 @@ import { useQuery } from '@tanstack/react-query';
 
 
 export default  function Home() {
-        const trpc = useTRPC();
-        const categories = useQuery(trpc.categories.getMany.queryOptions())
+  const trpc = useTRPC()
+  const {data} = useQuery(trpc.auth.session.queryOptions())
   return (
         <div>
-          home
-        </div>
-  );
-}
+        {JSON.stringify(data.user, null, 2)} 
+        hello
+        </div>); }
