@@ -13,17 +13,27 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { loginSchema} from "../../schemas"
+import { loginSchema } from "../../schemas"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useTRPC } from "@/trpc/client"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 
 
 const SignInView = () => {
   const trpc = useTRPC();
-  const login = useMutation(trpc.auth.login.mutationOptions())
+  const queryClient = useQueryClient()
+  const router = useRouter()
+  const login = useMutation(trpc.auth.login.mutationOptions({
+    onError: (error) => toast.error(error.message),
+    onSuccess: () => {
+      queryClient.invalidateQueries(trpc.auth.session.queryFilter())
+      router.push("/")
+    }
+  }))
   const form = useForm<z.infer<typeof loginSchema>>({
     mode: "all",
     resolver: zodResolver(loginSchema),

@@ -9,6 +9,6 @@ export default  function Home() {
   const {data} = useQuery(trpc.auth.session.queryOptions())
   return (
         <div>
-        {JSON.stringify(data.user, null, 2)} 
+        {JSON.stringify(data?.user, null, 2)} 
         hello
         </div>); }
