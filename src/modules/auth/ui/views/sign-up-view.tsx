@@ -1,5 +1,5 @@
 'use client'
-
+// import {useRouter} from 'next/navigation'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -19,12 +19,17 @@ import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { useTRPC } from "@/trpc/client"
 import { useMutation } from "@tanstack/react-query"
+import { toast } from 'sonner'
 
 
 
 const SignUpView = () => {
+  // const router =  useRouter()
   const trpc =  useTRPC();
-  const register = useMutation(trpc.auth.register.mutationOptions())
+  const register = useMutation(trpc.auth.register.mutationOptions({
+    onError: (error) => toast.error(error.message),
+//    onSuccess : () => router.push("/")
+  }))
   const form = useForm<z.infer<typeof RegisterSchema>>({
     mode: "all",
     resolver: zodResolver(RegisterSchema),

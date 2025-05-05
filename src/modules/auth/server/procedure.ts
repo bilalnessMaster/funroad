@@ -1,8 +1,8 @@
 import { headers as getHeaders, cookies as getCookies } from 'next/headers'
-import { baseProcedure, createTRPCRouter } from "@/trpc/init";
-import { TRPCError } from '@trpc/server';
+import { baseProcedure, createTRPCRouter } from "@/trpc/init"; import { TRPCError } from '@trpc/server';
 import { AUTH_COOKIE } from '../constants';
 import { loginSchema, RegisterSchema, } from '../schemas';
+import { generateAuthCookie } from '../utils';
 export const authRouter = createTRPCRouter({
   session: baseProcedure.query(async ({ ctx }) => {
     const headers = await getHeaders();
@@ -13,6 +13,27 @@ export const authRouter = createTRPCRouter({
     .input(
       RegisterSchema
     ).mutation(async ({ input, ctx }) => {
+
+      const data = await ctx.db.find(
+        {
+          collection: "users",
+          where: {
+            usersname: {
+              equals: input.username
+
+            }
+          },
+          limit: 1
+        }
+      )
+
+      const existingUser = data.docs[0]
+
+      if (!existingUser) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Username already taken"
+        }) }
       await ctx.db.create({
         collection: 'users',
         data: {
@@ -43,17 +64,7 @@ export const authRouter = createTRPCRouter({
       }
 
       // this is import for tto make sure subdomain share same cookies as the main one
-      const cookies = await getCookies();
-      cookies.set({
-        name: AUTH_COOKIE,
-        value: data.token,
-        httpOnly: true,
-        path: "/",
-        // sameSite : "none",
-        // domain : ""
-
-      })
-
+      await generateAuthCookie({ value: data.token, prefix: ctx.db.config.cookiePrefix })
       return data;
 
     }),
