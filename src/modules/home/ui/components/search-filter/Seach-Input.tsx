@@ -2,7 +2,7 @@
 import { Input } from '@/components/ui/input'
 import { BookmarkCheckIcon, ListFilterIcon, SearchIcon } from 'lucide-react'
 import React, { useState } from 'react'
-import { CustomCategory } from '../types';
+
 import CategoriesSidebar from './CategoriesSidebar';
 import { Button } from '@/components/ui/button';
 import { useTRPC } from '@/trpc/client';
