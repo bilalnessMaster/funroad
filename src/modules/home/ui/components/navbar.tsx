@@ -43,7 +43,6 @@ const Navbar = () => {
   const session = useQuery(trpc.auth.session.queryOptions())
   const pathName = usePathname()
   const [isSideBarOpen, setIsSideBarOpen] = useState(false)
- console.log(session)
   return (
     <nav className='h-20 flex border-b justify-between font-medium bg-white'>
       <Link href={'/'} className='pl-6 items-center flex'>
@@ -67,7 +66,7 @@ const Navbar = () => {
             className='border-l border-t-0 border-b-0 border-r-0  px-12 h-full  rounded-none bg-black text-white  hover:bg-pink-400 hover:text-black transition-colors text-lg'
           >
             <Link href='/admin'>
-             Dashboard 
+              Dashboard
             </Link>
           </Button>
 

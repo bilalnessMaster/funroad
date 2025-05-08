@@ -27,7 +27,7 @@ const CategoryDropdown = ({
   const onMouseLeave = () => {
     setIsOpen(false)
   }
-  const toggelDropdown = () =>{
+  const toggelDropdown = () => {
     if (category.subcategories) {
       setIsOpen(!isOpen)
     }
@@ -38,14 +38,14 @@ const CategoryDropdown = ({
       ref={dropdownRef}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      
+
 
     >
       <div className='relative w-fit'>
-        <Button onClick={toggelDropdown}  variant={'elevated'} className={cn('h-11 px-4 bg-none border-transparent rounded-full hover:bg-white hover:border-primary text-black', { 'bg-none hover:border-primary': !isActive && !isNavigationHovered , 'bg-white border-primary  shadow-[4px_4px_0px_0px_rgba(0,0,0,,1)] -translate-x-[4px] -translate-y-[4px]' : isOpen})} >
+        <Button onClick={toggelDropdown} variant={'elevated'} className={cn('h-11 px-4 bg-none border-transparent rounded-full hover:bg-white hover:border-primary text-black', { 'bg-transparent hover:border-primary': !isActive && !isNavigationHovered, 'bg-white border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,,1)] -translate-x-[4px] -translate-y-[4px]': isOpen })} >
           <Link href={`/${category.slug === 'all' ? "" : category.slug}`}>
-          {category.name}
-          
+            {category.name}
+
           </Link>
         </Button>
 
