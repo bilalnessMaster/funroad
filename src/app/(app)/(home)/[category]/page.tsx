@@ -1,11 +1,8 @@
 import { loadProductFitlers } from "@/modules/products/hooks/use-products-filters";
-import { ProductFilters } from "@/modules/products/ui/components/product-filters";
-import ProductList, { ProductsListSkeleton } from "@/modules/products/ui/components/product-list";
-import { ProductSort } from "@/modules/products/ui/components/product-sort";
+import { ProductListView } from "@/modules/products/ui/views/product-list-view";
 import { getQueryClient, trpc } from "@/trpc/server";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { SearchParams } from "nuqs";
-import { Suspense } from "react";
 
 
 interface Props {
@@ -25,25 +22,8 @@ const Page = async (props: Props) => {
   }))
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <div className="px-4 lg:px-12 py-8 flex flex-col gap-4">
-        <div className="flex flex-col lg:flex-row lg:items-center gap-y-2 lg:gap-y-0 justify-between">
-          <p className="text-2xl font-medium">Curted for you </p>
-
-            <ProductSort />
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cola-6 xl:grid-cols-8 gap-y-6 gap-x-12">
-          <div className="lg:col-span-2 xl:col-span-2">
-            <ProductFilters />
-          </div>
-
-          <div className="lg:col-span-4 xl:col-span-6">
-            <Suspense fallback={<ProductsListSkeleton />}>
-              <ProductList category={category} />
-            </Suspense>
-          </div>
-        </div>
-      </div>
-    </HydrationBoundary >)
+    <ProductListView category={category} />
+  </HydrationBoundary >)
 
 }
 
