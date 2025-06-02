@@ -4,6 +4,7 @@ import { useTRPC } from "@/trpc/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LoaderIcon } from "lucide-react";
 import { useProductFilters } from "../../hooks/use-products-filters";
+import { DEFAULT_LIMIT } from "@/lib/constant";
 
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
 export const TagsFilter = ({ value, onChange }: Props) => {
   const trpc = useTRPC();
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useInfiniteQuery(trpc.tags.getMany.infiniteQueryOptions({
-    limit: 10
+    limit: DEFAULT_LIMIT, 
   }, {
     getNextPageParam: (lastPage) => {
       return lastPage.docs.length > 0 ? lastPage.nextPage : undefined;

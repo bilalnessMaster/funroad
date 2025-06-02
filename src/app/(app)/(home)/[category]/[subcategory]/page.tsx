@@ -26,7 +26,7 @@ const Page = async (props: Props) => {
   const filters = await loadProductFitlers(props.searchParams)
   const category = params.subcategory;
   const queryClient = getQueryClient();
-  void queryClient.prefetchQuery(trpc.products.getMany.queryOptions({
+  void queryClient.prefetchInfiniteQuery(trpc.products.getMany.infiniteQueryOptions({
     category,
     ...filters
   }))
