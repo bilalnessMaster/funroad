@@ -3,6 +3,7 @@ import { baseProcedure, createTRPCRouter } from "@/trpc/init"; import { TRPCErro
 import { AUTH_COOKIE } from '../constants';
 import { loginSchema, RegisterSchema, } from '../schemas';
 import { generateAuthCookie } from '../utils';
+import { tenantField } from '@payloadcms/plugin-multi-tenant/fields';
 export const authRouter = createTRPCRouter({
   session: baseProcedure.query(async ({ ctx }) => {
     const headers = await getHeaders();
@@ -13,12 +14,15 @@ export const authRouter = createTRPCRouter({
     .input(
       RegisterSchema
     ).mutation(async ({ input, ctx }) => {
+      console.log(
+        input
+              )
 
       const data = await ctx.db.find(
         {
           collection: "users",
           where: {
-            usersname: {
+            username: {
               equals: input.username
 
             }
@@ -29,19 +33,39 @@ export const authRouter = createTRPCRouter({
 
       const existingUser = data.docs[0]
 
-      if (!existingUser) {
+      if (existingUser) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Username already taken"
-        }) }
-      await ctx.db.create({
+        })
+      }
+      const tenant = await ctx.db.create({
+        collection: "tenants",
+        data: {
+          name: input.username,
+          slug: input.username,
+          stripeAccountId: "test",
+        }
+      })
+
+     console.log("tenant : " , tenant)
+      
+
+      
+       await ctx.db.create({
         collection: 'users',
         data: {
           email: input.email,
           password: input.password, // this will be hashed
           username: input.username,
+          tenants : [
+            {
+              tenant : tenant.id , 
+            }
+          ]
         }
       })
+       
     }),
   login: baseProcedure
     .input(

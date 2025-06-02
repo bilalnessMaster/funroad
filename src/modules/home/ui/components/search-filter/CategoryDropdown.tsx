@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import React, { useRef, useState } from 'react'
-import { useDropdownPosition } from './use-hook-dropdown'
 import { SubCategoryMenu } from './subcategoryMenu'
 import Link from 'next/link'
 import { CategoriesGetManyOutput } from '@/modules/categories/types'
@@ -18,7 +17,6 @@ const CategoryDropdown = ({
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const { getDropdownPosition } = useDropdownPosition(dropdownRef)
   const onMouseEnter = () => {
     if (category.subcategories) {
       setIsOpen(true)
@@ -32,7 +30,6 @@ const CategoryDropdown = ({
       setIsOpen(!isOpen)
     }
   }
-  const dropdownPosition = getDropdownPosition();
   return (
     <div className='relative w-fit'
       ref={dropdownRef}
@@ -59,7 +56,6 @@ const CategoryDropdown = ({
       <SubCategoryMenu
         category={category}
         isOpen={isOpen}
-        position={dropdownPosition}
       />
 
     </div>
