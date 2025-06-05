@@ -4,12 +4,12 @@ import ProductList, { ProductsListSkeleton } from "../components/product-list"
 import { ProductSort } from "../components/product-sort"
 
 interface Props { 
-  category: string;
-  
-
+  category?: string; 
+  tenantSlug?: string;
+  narrowview?: boolean; 
 }
 
-export const ProductListView = ({category} : Props) =>{
+export const ProductListView = ({category, tenantSlug, narrowview} : Props) =>{
 
 
 return ( 
@@ -25,8 +25,8 @@ return (
           </div>
 
           <div className="lg:col-span-4 xl:col-span-6">
-            <Suspense fallback={<ProductsListSkeleton />}>
-              <ProductList category={category} />
+            <Suspense fallback={<ProductsListSkeleton narrowview={narrowview}/>}>
+              <ProductList narrowview={narrowview} category={category} tenantSlug={tenantSlug}/>
             </Suspense>
           </div>
         </div>

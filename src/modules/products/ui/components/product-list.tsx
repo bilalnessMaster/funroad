@@ -6,21 +6,25 @@ import { useProductFilters } from "../../hooks/use-products-filters";
 import ProductCard, { ProductCardSkeleton } from "./product-card";
 import { Button } from "@/components/ui/button";
 import { InboxIcon } from "lucide-react";
+import { DEFAULT_LIMIT } from "@/lib/constant";
+import { cn } from "@/lib/utils";
 
 
 interface Props {
-  category: string;
-
+  category?: string;
+  tenantSlug?: string;
+  narrowview?: boolean;
 }
 
-const ProductList = ({ category }: Props) => {
+const ProductList = ({ category, tenantSlug, narrowview }: Props) => {
   const trpc = useTRPC();
-
+  console.log(tenantSlug)
   const [filters] = useProductFilters();
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useSuspenseInfiniteQuery(trpc.products.getMany.infiniteQueryOptions({
     category,
     ...filters,
-    limit: 1
+    tenantSlug,
+    limit: DEFAULT_LIMIT
   }, {
     getNextPageParam: (lastPage) => lastPage.docs.length > 0 ? lastPage.nextPage : undefined
 
@@ -28,7 +32,7 @@ const ProductList = ({ category }: Props) => {
   if (data.pages?.[0]?.docs.length == 0) {
     return (
       <div className="border border-black border-dashed flex items-center justify-center p-8 flex-col gap-y-4 bg-white w-full rounded-lg">
-        <InboxIcon  />
+        <InboxIcon />
         <p className="text-base font-medium ">No products found</p>
       </div>
 
@@ -38,15 +42,15 @@ const ProductList = ({ category }: Props) => {
   }
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+      <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4", { "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3": narrowview })}>
         {
           data?.pages.flatMap((page) => page.docs).map((product) => (
             <ProductCard
               id={product.id}
               name={product.name}
               imageUrl={product.image?.url}
-              authorUsername="bilal"
-              authorImageUrl={undefined}
+              tenantSlug={product.tenant.slug}
+              tenantImageUrl={product.tenant?.image?.url}
               reviewCount={3}
               reviewRating={4}
               price={parseInt(product.price)}
@@ -78,15 +82,15 @@ const ProductList = ({ category }: Props) => {
 export default ProductList;
 
 
-export const ProductsListSkeleton = () => {
+export const ProductsListSkeleton = ({narrowview}: {narrowview ?: boolean}) => {
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
-    {
-      Array.from({length : 5} , (_ , index)=>(
-        <ProductCardSkeleton key={index} />
-      ))
-    }
+    <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4", { "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3": narrowview })}>
+      {
+        Array.from({ length: 5 }, (_, index) => (
+          <ProductCardSkeleton key={index} />
+        ))
+      }
     </div>
   )
 }
