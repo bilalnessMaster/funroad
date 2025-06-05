@@ -1,14 +1,16 @@
+import { generateTenantURL } from "@/lib/utils";
 import { StarIcon, } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 interface ProductCardProps {
   id: string;
   name: string;
   imageUrl?: string | null;
-  authorUsername: string;
-  authorImageUrl?: string | null;
+  tenantSlug: string;
+  tenantImageUrl?: string | null;
   reviewRating: number;
   reviewCount: number;
   price: number;
@@ -20,14 +22,18 @@ const ProductCard = ({
   id,
   name,
   imageUrl,
-  authorUsername,
-  authorImageUrl,
+  tenantSlug,
+  tenantImageUrl,
   reviewRating,
   reviewCount,
   price
 }: ProductCardProps) => {
-
-
+const router = useRouter()
+const handleUserClick = (e : React.MouseEvent<HTMLDivElement>) =>{
+  e.preventDefault()
+  e.stopPropagation();
+  router.push(generateTenantURL(tenantSlug))
+}
 
 
   return (
@@ -38,14 +44,14 @@ const ProductCard = ({
         </div>
         <div className="p-4 border-y flex flex-col gap-3 flex-1">
           <h2 className="font-medium text-lg line-clamp-4 ">{name}</h2>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" onClick={handleUserClick}>
             {
-              authorImageUrl && (
-                <Image src={authorImageUrl} alt={authorUsername} width={16} height={16} className="rounded-full border shrink-0 size-[16px]" />
+              tenantImageUrl && (
+                <Image src={tenantImageUrl} alt={tenantSlug} width={16} height={16} className="rounded-full border shrink-0 size-[16px]" />
 
               )
             }
-            <p className="text-sm underline  font-medium">{authorUsername}</p>
+            <p className="text-sm underline  font-medium">{tenantSlug}</p>
           </div>
           {
             reviewCount > 0 && (

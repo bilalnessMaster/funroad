@@ -8,20 +8,23 @@ import { SearchParams } from "nuqs";
 
 
 interface Props {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
+  params : Promise<{slug: string}>;
 }
 
 
-const Page = async (props: Props) => {
-  const filters = await loadProductFitlers(props.searchParams)
+const Page = async ({ params , searchParams}: Props) => {
+  const  {slug} = await params;
+  const filters = await loadProductFitlers(searchParams)
   const queryClient = getQueryClient();
   void queryClient.prefetchInfiniteQuery(trpc.products.getMany.infiniteQueryOptions({
     ...filters,
+    tenantSlug : slug , 
     limit : DEFAULT_LIMIT, 
   }))
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-    <ProductListView />
+    <ProductListView tenantSlug={slug} narrowview={true} />
   </HydrationBoundary >)
 
 }
