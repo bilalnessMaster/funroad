@@ -6,9 +6,18 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 
-export const generateTenantURL = (tenantSlug : string) =>{
+export const generateTenantURL = (tenantSlug: string) => {
 
-   return `/tenant/${tenantSlug}`
+  return `/tenant/${tenantSlug}`
 
 
+}
+
+export const formatCurrency = (price: string | number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+
+  }).format(Number(price))
 }
