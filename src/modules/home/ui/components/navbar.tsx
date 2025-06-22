@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react'
 import { Poppins } from 'next/font/google'
-import Link from 'next/Link'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { usePathname } from 'next/navigation'
@@ -9,7 +8,7 @@ import NavbarSidebar from './navbar-sidebar'
 import { MenuIcon } from 'lucide-react'
 import { useTRPC } from '@/trpc/client'
 import { useQuery } from '@tanstack/react-query'
-import { log } from 'console'
+import Link from 'next/link'
 const poppin = Poppins({
   subsets: ['latin'],
   weight: ['700']
