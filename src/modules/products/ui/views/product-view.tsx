@@ -3,19 +3,31 @@
 import StarRating from "@/components/star-rating";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import dynamic from "next/dynamic";
 import { formatCurrency, generateTenantURL } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { Link2, StarIcon } from "lucide-react";
+import { Link2, Loader, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Fragment } from "react";
+// import { CartButton } from "../components/cart-button";
 
-
+const CartButton = dynamic(
+  () => import("../components/cart-button").then(
+    (mod) => mod.CartButton
+  ),
+  {
+    ssr: false,
+    loading: () => <Button disabled className="flex-1 bg-pink-400" variant={'elevated'}>
+      <Loader className="animate-spin" />
+    </Button>
+  }
+)
 
 interface Props {
   productId: string;
-  tenantSLug: string;
+  tenantSlug: string;
 
 }
 
@@ -34,7 +46,7 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
         <div className="relative aspect-[3.9] borde-b">
           <Image
             fill
-            className="object-tcover"
+            className="object-cover"
             src={product.image?.url || '/placeholder.png'}
             alt={product.image?.alt || product.name} />
         </div>
@@ -100,9 +112,7 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
             <div className="border-t lg:border-t-0 lg:border-l h-full ">
               <div className="flex flex-col gap-4 p-6 border-b ">
                 <div className="flex flex-row items-center gap-2 ">
-                  <Button variant={"elevated"} className="flex-1 bg-pink-400" >
-                    Add to cart
-                  </Button>
+                  <CartButton tenantSlug={tenantSlug} productId={productId} />
                   <Button
                     variant={"elevated"}
                     className=""
@@ -113,7 +123,7 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
                 </div>
                 <p className="text-center font-medium ">
                   {
-                    product.refundPolicy === 'no-refunds' ?
+                    product.refundPolicy === 'no-refund' ?
                       "No refunds" :
                       product.refundPolicy
                   }
@@ -128,17 +138,17 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
                     <p className="text-base">{5} ratings</p>
                   </div>
                 </div>
-                <div 
-                className="grid grid-cols-[auto_1fr_auto] gap-3 mt-4"
+                <div
+                  className="grid grid-cols-[auto_1fr_auto] gap-3 mt-4"
                 >
                   {
-                    [5,4,3,2,1].map((star) =>(
+                    [5, 4, 3, 2, 1].map((star) => (
                       <Fragment key={star}>
-                      <div className="font-medium">
-                           {star} {star === 1 ? "star" : "stars"}
-                      </div>
-                      <Progress value={star} className="h-[1lh]" />
-                      <div>{star}%</div>
+                        <div className="font-medium">
+                          {star} {star === 1 ? "star" : "stars"}
+                        </div>
+                        <Progress value={star} className="h-[1lh]" />
+                        <div>{star}%</div>
                       </Fragment>
                     ))
                   }
