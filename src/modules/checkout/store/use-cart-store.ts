@@ -35,21 +35,26 @@ const useCarteStore = create<CartState>()(
           ...state.tenantCarts,
           [tenantSlug]: {
             productIds: state.tenantCarts[tenantSlug]?.productIds.filter(
-              (id) => id != productId
+              (id) => id !== productId
             ) || [],
           }
         }
       })),
       clearCart: (tenantSlug) => set((state) => ({
-        ...state.tenantCarts,
-        [tenantSlug]: {
-          productIds: []
+        tenantCarts: {
+          ...state.tenantCarts,
+          [tenantSlug]: {
+            productIds: []
+          }
         }
       })),
       clearAllCarts: () => set({
         tenantCarts: {}
       }),
-      getCartByTenant: (tenantSlug) => get().tenantCarts[tenantSlug]?.productIds || [],
+      getCartByTenant: (tenantSlug) => {
+        console.log("prodcuts ids on store", get().tenantCarts[tenantSlug]?.productIds || [] )
+        return get().tenantCarts[tenantSlug]?.productIds || []
+      },
     }),
     {
       name: "funroad",

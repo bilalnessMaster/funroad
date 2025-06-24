@@ -13,6 +13,7 @@ export const useCart = (tenantSlug: string) => {
 
 
   const productIds = getCartByTenant(tenantSlug);
+  console.log("prodcuts ids" ,productIds)
   const toggleProduct = (productId: string) => {
     if (productIds.includes(productId)) {
       removeProduct(tenantSlug, productId);
@@ -32,6 +33,7 @@ export const useCart = (tenantSlug: string) => {
     addProduct: (productId: string) => addProduct(tenantSlug, productId),
     clearCart: clearTenantCart,
     clearAllCarts,
+    removeProduct : (productId : string) => removeProduct(tenantSlug , productId),
     toggleProduct,
     isProductInCart,
     totalItems: productIds.length,
