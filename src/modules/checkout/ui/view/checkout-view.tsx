@@ -1,6 +1,6 @@
 'use client'
 import { useTRPC } from "@/trpc/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCart } from "../../hooks/use-cart";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -8,6 +8,8 @@ import { generateTenantURL } from "@/lib/utils";
 import { CheckoutItem } from "../components/checkout-item";
 import { CheckoutSidebar } from "../components/checkout-sidebar";
 import { InboxIcon, Loader } from "lucide-react";
+import { useCheckoutStates } from "../../hooks/use-checkout-states";
+import { useRouter } from "next/navigation";
 
 interface Props {
   tenantSlug: string
@@ -15,23 +17,49 @@ interface Props {
 }
 
 const CheckoutView = ({ tenantSlug }: Props) => {
-  const { productIds, clearAllCarts, removeProduct } = useCart(tenantSlug);
+  const router = useRouter()
+  const [states, setStates] = useCheckoutStates()
+  const { productIds, clearCart, clearAllCarts, removeProduct } = useCart(tenantSlug);
   const trpc = useTRPC()
   const { data, error, isPending } = useQuery(trpc.checkout.getProducts.queryOptions({
     ids: productIds,
   }))
 
+  const purchase = useMutation(trpc.checkout.purchase.mutationOptions({
+    onMutate: () => {
+      setStates({ success: false, cancel: false })
+    },
+    onSuccess: (data) => {
+      window.location.href = data.url;
+
+    },
+    onError: (error) => {
+      if (error?.data?.code === 'UNAUTHORIZED'){
+        router.push('/sign-in')
+      }
+      toast.error(error.message)
+    }
+  }))
+
+
+  useEffect(() => {
+    if (states.success) {
+      clearCart();
+      router.push('/products')
+    }
+
+  }, [states.success])
 
   useEffect(() => {
     if (error?.data?.code === "NOT_FOUND") {
-      clearAllCarts();
+      clearCart();
       toast.warning("Invalid products found, cart cleared")
     }
 
-  }, [error, clearAllCarts])
+  }, [error, clearCart])
   if (isPending) {
     return (
-      <div className="lg:pt-16 pt-4 lg:px-12 border border-black border-dashed flex items-center justify-center p-8 flex-col bg-white w-full rounded-lg">
+      <div className="lg:pt-16 pt-4 lg:px-12 border mt-4 border-black border-dashed flex items-center justify-center p-8 flex-col bg-white w-full rounded-lg">
         <Loader className="animate-spin text-muted-foreground" />
         <p className="text-base font-medium">loading ..</p>
       </div>
@@ -40,7 +68,7 @@ const CheckoutView = ({ tenantSlug }: Props) => {
   }
   if (data?.totalDocs === 0) {
     return (
-      <div className=" lg:pt-16 pt-4 lg:px-12 border border-black border-dashed flex items-center justify-center p-8 flex-col bg-white w-full rounded-lg">
+      <div className=" lg:pt-16 pt-4 lg:px-12 mt-4 border border-black border-dashed flex items-center justify-center p-8 flex-col bg-white w-full rounded-lg">
         <InboxIcon />
         <p className="text-base font-medium">No product found</p>
       </div>
@@ -57,7 +85,7 @@ const CheckoutView = ({ tenantSlug }: Props) => {
                   key={product.id}
                   id={product.id}
                   isLast={index === data.docs.length}
-                  imageUrl={product.image?.url}
+                  imageUrl={product.image?.url || '/placeholder.png'}
                   name={product.name}
                   productUrl={`${generateTenantURL(product.tenant.slug)}/products/${product.id}`}
                   tenantUrl={generateTenantURL(product.tenant.slug)}
@@ -72,9 +100,9 @@ const CheckoutView = ({ tenantSlug }: Props) => {
         <div className="lg:col-span-3">
           <CheckoutSidebar
             total={data?.totalPrice || 0}
-            onCheckout={() => { }}
-            isPending={false}
-            isCanceled={false}
+            onPurchase={() => purchase.mutate({ ids: productIds, tenantSlug })}
+            disabled={purchase.isPending}
+            isCanceled={states.cancel}
 
           />
         </div>
