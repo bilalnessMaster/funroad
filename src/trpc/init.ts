@@ -1,14 +1,12 @@
-import { initTRPC } from '@trpc/server';
+import { initTRPC, TRPCError } from '@trpc/server';
 import { getPayload } from 'payload';
 import configPromise from '@payload-config'
 import { cache } from 'react';
 import superjson from 'superjson';  
-export const createTRPCContext = cache(async () => {
+import { headers as getHeaders } from 'next/headers';
   /**
    * @see: https://trpc.io/docs/server/context
    */
-  return { userId: 'user_123' };
-});
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
 // For instance, the use of a t variable
@@ -27,4 +25,30 @@ export const baseProcedure = t.procedure.use(async ({ next}) => {
         config : configPromise
     })
     return next({ctx :{ db : payload}})
+})
+
+export const protectedProcedure = baseProcedure.use(async ({ctx , next})=>{
+   
+  const headers = await getHeaders()
+
+  const session = await ctx.db.auth({
+    headers
+  })
+
+  if(!session.user){
+    throw new TRPCError({
+      code : "UNAUTHORIZED",
+      message : "Not authenticated"
+    })
+  }
+ return next({
+   ctx : {
+     ...ctx , 
+     session : {
+       ...session , 
+       user  : session.user
+     }
+   }
+ })
+
 })

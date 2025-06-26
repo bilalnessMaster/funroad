@@ -5,7 +5,7 @@ import Link from "next/link"
 
 interface Props {
   isLast: boolean
-  imageUrl?: string
+  imageUrl?: string | undefined
   name: string
   productUrl: string
   tenantUrl: string
