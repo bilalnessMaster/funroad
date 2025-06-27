@@ -1,8 +1,11 @@
-import { baseProcedure, createTRPCRouter } from "@/trpc/init"; 
+import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { z } from "zod";
 import type { Sort, Where } from 'payload'
 import { Category, Media, Tenant } from "@/payload-types";
 import { sortValues } from "../hooks/use-products-filters";
+import { headers as getHeaders } from "next/headers";
+
+
 export const productsRouter = createTRPCRouter({
   getOne: baseProcedure
     .input(
@@ -11,16 +14,44 @@ export const productsRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-
+      const headers = await getHeaders()
+      const session = await ctx.db.auth({ headers })
+      let isPurchase = false
       const product = await ctx.db.findByID({
         collection: "products",
         id: input.id,
       })
+      if (session.user) {
+        const orders = await ctx.db.find({
+          collection: "orders",
+          pagination: false,
+          limit: 1,
+          where: {
+            and: [
+              {
+                user: {
+                  equals: session.user.id
+                }
+              },
+              {
+                product: {
+                  equals: input.id
+                }
+              }
+            ]
 
+          }
+        })
+        const order = !!orders.docs[0]
+        if(order){
+          isPurchase  = true
+        }
+      }
       return {
-        ...product , 
-        image : product.image as Media | null,
-        tenant : product.tenant as Tenant & { image : Media | null},
+        isPurchase,
+        ...product,
+        image: product.image as Media | null,
+        tenant: product.tenant as Tenant & { image: Media | null },
       }
     }),
   getMany: baseProcedure

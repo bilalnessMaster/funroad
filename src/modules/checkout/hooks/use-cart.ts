@@ -1,39 +1,47 @@
+import { useCallback } from "react";
 import useCarteStore from "../store/use-cart-store";
-
+// import { useShallow } from 'zustand/react/shalllow'
 
 
 export const useCart = (tenantSlug: string) => {
-  const {
-    getCartByTenant,
-    clearAllCarts,
-    clearCart,
-    removeProduct,
-    addProduct,
-  } = useCarteStore()
+  const clearAllCarts = useCarteStore((state) => state.clearAllCarts)
+  const addProduct = useCarteStore((state) => state.addProduct)
+  const clearCart = useCarteStore((state) => state.clearCart)
+  const removeProduct = useCarteStore((state) => state.removeProduct)
 
+  const productIds = useCarteStore((state) => state.tenantCarts[tenantSlug]?.productIds || []);
 
-  const productIds = getCartByTenant(tenantSlug);
-  console.log("prodcuts ids" ,productIds)
-  const toggleProduct = (productId: string) => {
+  const toggleProduct = useCallback((productId: string) => {
     if (productIds.includes(productId)) {
       removeProduct(tenantSlug, productId);
     } else {
       addProduct(tenantSlug, productId);
     }
-  }
-  const isProductInCart = (productId: string) => {
+  }, [addProduct, removeProduct, productIds])
+
+  const isProductInCart = useCallback((productId: string) => {
     return productIds.includes(productId);
-  }
-  const clearTenantCart = () => {
+  }, [productIds])
+
+  const clearTenantCart = useCallback(() => {
     clearCart(tenantSlug);
-  }
+  }, [clearCart, tenantSlug])
+
+
+  const handleAddProduct = useCallback((productId: string) => {
+    addProduct(tenantSlug, productId)
+  }, [addProduct, tenantSlug])
+
+  const handleRemoveProduct = useCallback((productId: string) => {
+    removeProduct(tenantSlug, productId)
+  }, [removeProduct, tenantSlug])
 
   return {
     productIds,
-    addProduct: (productId: string) => addProduct(tenantSlug, productId),
+    addProduct: handleAddProduct,
     clearCart: clearTenantCart,
     clearAllCarts,
-    removeProduct : (productId : string) => removeProduct(tenantSlug , productId),
+    removeProduct: handleRemoveProduct,
     toggleProduct,
     isProductInCart,
     totalItems: productIds.length,

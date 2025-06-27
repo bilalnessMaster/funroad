@@ -38,7 +38,7 @@ const SeachInput = ({ disabled }: Props) => {
             variant={'elevated'}
 
           >
-            <Link href='/library'>
+            <Link prefetch href='/library'>
               <BookmarkCheckIcon className='mr-2' />
               library
             </Link>
