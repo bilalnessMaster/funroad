@@ -35,7 +35,7 @@ interface Props {
 
 const ProductView = ({ productId, tenantSlug }: Props) => {
   const trpc = useTRPC()
-
+  
   const { data: product } = useSuspenseQuery(trpc.products.getOne.queryOptions({
     id: productId
   }))
@@ -112,7 +112,7 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
             <div className="border-t lg:border-t-0 lg:border-l h-full ">
               <div className="flex flex-col gap-4 p-6 border-b ">
                 <div className="flex flex-row items-center gap-2 ">
-                  <CartButton tenantSlug={tenantSlug} productId={productId} />
+                  <CartButton isPurchase={product.isPurchase} tenantSlug={tenantSlug} productId={productId} />
                   <Button
                     variant={"elevated"}
                     className=""
