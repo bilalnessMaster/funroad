@@ -36,7 +36,7 @@ const ProductCard = ({
 
 
   return (
-    <Link href={`${generateTenantURL(tenantSlug)}/products/${id}`}>
+    <Link href={`/library/${id}`}>
       <div className="border rounded-md bg-white overflow-hidden h-full flex flex-col transition-shadow hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ">
         <div className="relative aspect-square">
           <Image src={imageUrl || "/background.png"} alt={name} fill className="object-cover" />
