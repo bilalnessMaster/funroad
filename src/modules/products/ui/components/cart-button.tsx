@@ -13,8 +13,9 @@ export const CartButton = ({ isPurchase, tenantSlug, productId }: Props) => {
   if (isPurchase) {
     return (
       <Button variant={'elevated'} asChild className="flex-1 font--medium bg-pink-400">
-      <Link href={`library/${productId}` }></Link>  
-      View in library
+        <Link href={`/library/${productId}`}>
+          View in library
+        </Link>
 
       </Button>
 

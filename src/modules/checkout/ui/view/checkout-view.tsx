@@ -1,6 +1,6 @@
 'use client'
 import { useTRPC } from "@/trpc/client";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useCart } from "../../hooks/use-cart";
 import { useEffect } from "react";
 import { toast } from "sonner";
@@ -19,6 +19,7 @@ interface Props {
 const CheckoutView = ({ tenantSlug }: Props) => {
   const router = useRouter()
   const [states, setStates] = useCheckoutStates()
+  const QueryClient = useQueryClient()
   const { productIds, clearCart, clearAllCarts, removeProduct } = useCart(tenantSlug);
   const trpc = useTRPC()
   const { data, error, isPending } = useQuery(trpc.checkout.getProducts.queryOptions({
@@ -45,10 +46,10 @@ const CheckoutView = ({ tenantSlug }: Props) => {
   useEffect(() => {
     if (states.success) {
       clearCart();
-      router.push('/products')
+      QueryClient.invalidateQueries(trpc.library.getMany.infiniteQueryFilter())
+      router.push('/library')
     }
-
-  }, [states.success])
+  }, [states.success, QueryClient , trpc.library.getMany])
 
   useEffect(() => {
     if (error?.data?.code === "NOT_FOUND") {
@@ -57,6 +58,7 @@ const CheckoutView = ({ tenantSlug }: Props) => {
     }
 
   }, [error, clearCart])
+
   if (isPending) {
     return (
       <div className="lg:pt-16 pt-4 lg:px-12 border mt-4 border-black border-dashed flex items-center justify-center p-8 flex-col bg-white w-full rounded-lg">
