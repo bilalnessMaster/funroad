@@ -37,6 +37,7 @@ export const reviewRouter = createTRPCRouter({
         ]
       })
       const review = reviewsData.docs[0]
+      console.log(review)
       if (!review) {
         return null
       }
@@ -125,7 +126,7 @@ export const reviewRouter = createTRPCRouter({
           message: "review not found"
         })
       }
-      if (exitingReview.id !== ctx.session.user.id) {
+      if (exitingReview.user !== ctx.session.user.id) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Your are not allowed to update this review"
@@ -138,7 +139,6 @@ export const reviewRouter = createTRPCRouter({
         id: input.reviewId,
         data: {
           user: ctx.session.user.id as string,
-          product: product.id,
           rating: input.rating,
           description: input.description
         }

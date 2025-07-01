@@ -40,10 +40,10 @@ const ProductList = () => {
               id={product.id}
               name={product.name}
               imageUrl={product.image?.url}
-              tenantSlug={product.tenant.slug}
+              tenantSlug={product.tenant?.slug}
               tenantImageUrl={product.tenant?.image?.url}
-              reviewCount={3}
-              reviewRating={4}
+              reviewCount={product.reviewsCount}
+              reviewRating={product.reviewsRating}
               key={product.id} />
 
           ))
