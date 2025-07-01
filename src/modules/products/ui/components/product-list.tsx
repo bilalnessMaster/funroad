@@ -51,8 +51,8 @@ const ProductList = ({ category, tenantSlug, narrowview }: Props) => {
               imageUrl={product.image?.url}
               tenantSlug={product.tenant.slug}
               tenantImageUrl={product.tenant?.image?.url}
-              reviewCount={3}
-              reviewRating={4}
+              reviewCount={product.reviewsCount}
+              reviewRating={product.reviewsRating}
               price={parseInt(product.price)}
               key={product.id} />
 
@@ -82,7 +82,7 @@ const ProductList = ({ category, tenantSlug, narrowview }: Props) => {
 export default ProductList;
 
 
-export const ProductsListSkeleton = ({narrowview}: {narrowview ?: boolean}) => {
+export const ProductsListSkeleton = ({ narrowview }: { narrowview?: boolean }) => {
 
   return (
     <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4", { "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3": narrowview })}>

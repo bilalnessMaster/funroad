@@ -43,13 +43,25 @@ export const productsRouter = createTRPCRouter({
           }
         })
         const order = !!orders.docs[0]
-        if(order){
-          isPurchase  = true
+        if (order) {
+          isPurchase = true
         }
       }
+      const reviews = await ctx.db.find({
+        collection: "reviews",
+        pagination: false,
+        where: {
+          product: {
+            equals: input.id
+          }
+        }
+      })
       return {
         isPurchase,
         ...product,
+        reviews , 
+        reviewsCount: reviews.totalDocs,
+        reviewsRating: reviews.docs.length === 0 ? 0 : reviews.docs.reduce((acc, review) => acc += review.rating, 0) / reviews.totalDocs,
         image: product.image as Media | null,
         tenant: product.tenant as Tenant & { image: Media | null },
       }
@@ -147,9 +159,27 @@ export const productsRouter = createTRPCRouter({
         page: input.cursor,
         limit: input.limit,
       })
+      const ProductWithReviews = await Promise.all(
+        data.docs.map(async (product) => {
+          const reviews = await ctx.db.find({
+            collection: "reviews",
+            pagination: false,
+            where: {
+              product: {
+                equals: product.id
+              }
+            }
+          })
+          return {
+            ...product,
+            reviewsCount: reviews.totalDocs,
+            reviewsRating: reviews.docs.length === 0 ? 0 : reviews.docs.reduce((acc, review) => acc += review.rating, 0) / reviews.totalDocs
+          }
+        })
+      )
       return {
-        ...data,
-        docs: data.docs.map((doc) => ({
+        ...ProductWithReviews,
+        docs: ProductWithReviews.map((doc) => ({
           ...doc,
           image: doc.image as Media | null,
           tenant: doc.tenant as Tenant & { image: Media | null },
