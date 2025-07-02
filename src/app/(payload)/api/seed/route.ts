@@ -1,5 +1,7 @@
+import { stripe } from '@/lib/stripe'
 import { Category } from '@/payload-types'
 import configPromise from '@payload-config'
+import { TRPCError } from '@trpc/server'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 
@@ -147,13 +149,23 @@ export const GET = async () => {
       const payload = await getPayload({
         config: configPromise,
       })
+      const account = await stripe.accounts.create({});
+
+      if (!account) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "no accout has been created"
+        })
+
+      }
+
       const tenant = await payload.create({
 
         collection: "tenants",
         data: {
           name: "admin",
           slug: "admin",
-          stripeAccountId: "admin",
+          stripeAccountId: account.id 
         }
       })
 
