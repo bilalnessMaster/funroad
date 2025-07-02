@@ -16,6 +16,9 @@ export const checkoutRouter = createTRPCRouter({
       collection: "products",
       depth: 2,
       pagination: false,
+      select: {
+        content: false
+      },
       where: {
         and: [
           {
@@ -78,27 +81,28 @@ export const checkoutRouter = createTRPCRouter({
     }))
     const checkout = await stripe.checkout.sessions.create({
       customer_email: ctx.session.user.email,
-      success_url :  `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${input.tenantSlug}/checkout?success=true` ,
-      cancel_url:  `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${input.tenantSlug}/checkout?cancel=true` ,
-      mode : "payment",
-      line_items : lineItems,
-      invoice_creation : {
-        enabled : true,
+      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${input.tenantSlug}/checkout?success=true`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${input.tenantSlug}/checkout?cancel=true`,
+      mode: "payment",
+      line_items: lineItems,
+      invoice_creation: {
+        enabled: true,
       },
-      metadata : {
-        userId : ctx.session.user.id, 
+      metadata: {
+        userId: ctx.session.user.id,
       } as CheckoutMetadata
 
     })
 
-    if(!checkout.url){
-    throw new TRPCError({
-      code : 'INTERNAL_SERVER_ERROR',
-      message : "failed to create checkout"
-    })}
+    if (!checkout.url) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: "failed to create checkout"
+      })
+    }
 
 
-    return {url : checkout.url}
+    return { url: checkout.url }
   }),
   getProducts: baseProcedure
     .input(
@@ -110,6 +114,9 @@ export const checkoutRouter = createTRPCRouter({
 
       const data = await ctx.db.find({
         collection: "products",
+        select: {
+          content: false
+        },
         pagination: false,
         where: {
           id: {

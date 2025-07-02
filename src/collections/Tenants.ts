@@ -1,8 +1,14 @@
 
+import { isSuperAdmin } from '@/lib/access'
 import type { CollectionConfig } from 'payload'
 
 export const Tenants: CollectionConfig = {
   slug: 'tenants',
+  access: {
+    read: () => true,
+    create: ({ req }) => isSuperAdmin(req.user),
+    delete: ({ req }) => isSuperAdmin(req.user)
+  },
   admin: {
     useAsTitle: 'slug',
   },
@@ -24,6 +30,9 @@ export const Tenants: CollectionConfig = {
       unique: true,
       admin: {
         description: "This is the subdomain for  ther store (e.g [slug].funroad.com)"
+      },
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user)
       }
     },
     {
@@ -36,16 +45,18 @@ export const Tenants: CollectionConfig = {
       name: "stripeAccountId",
       type: 'text',
       required: true,
-      admin: {
-        readOnly: true
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user)
       }
     },
     {
       name: "stripeDetailsSubmitted",
       type: "checkbox",
+      access: {
+        update: ({ req }) => isSuperAdmin(req.user)
+      },
       admin: {
-        readOnly: true,
-        description: "You cannot create product until    you submit your stripe details"
+        description: "You cannot create product until you submit your stripe details"
       }
     }
 

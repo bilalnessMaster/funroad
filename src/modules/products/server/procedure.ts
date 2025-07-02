@@ -20,6 +20,9 @@ export const productsRouter = createTRPCRouter({
       const product = await ctx.db.findByID({
         collection: "products",
         id: input.id,
+        select: {
+          content: false
+        }
       })
       if (session.user) {
         const orders = await ctx.db.find({
@@ -59,7 +62,7 @@ export const productsRouter = createTRPCRouter({
       return {
         isPurchase,
         ...product,
-        reviews , 
+        reviews,
         reviewsCount: reviews.totalDocs,
         reviewsRating: reviews.docs.length === 0 ? 0 : reviews.docs.reduce((acc, review) => acc += review.rating, 0) / reviews.totalDocs,
         image: product.image as Media | null,
@@ -124,6 +127,9 @@ export const productsRouter = createTRPCRouter({
             slug: {
               equals: input.category
             }
+          },
+          select: {
+            content: false
           }
         })
         const formatedData = categoriesData.docs.map((doc) => ({
