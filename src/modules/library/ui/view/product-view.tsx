@@ -29,15 +29,28 @@ export const ProductView = ({ productId }: Props) => {
       <section className="max-w-(--breakpoint-xl) mx-auto lg:px-12 flex flex-col py-10 ">
         <div className="grid gird-cols-1 lg:grid-cols-7 gap-4 lg:gap-16">
           <div className="lg:col-span-2">
-          <div className="p-4 bg-white rounded-md border gap-4">
-          <ReviewSidebar productId={productId} />
-          </div>
+            <div className="p-4 bg-white rounded-md border gap-4">
+              <ReviewSidebar productId={productId} />
+            </div>
 
           </div>
 
 
           <div className="lg:col-span-2">
-          <p className="font-medium italic text-muted-foreground">No SPENA</p>
+            {
+              data.content ?
+                (
+                  <p>
+                    {data.content}
+                  </p>
+                ) :
+                (
+                  <p className="font-medium italic text-muted-foreground">
+                    No special content yet
+                  </p>
+                )
+            }
+
           </div>
         </div>
       </section>
