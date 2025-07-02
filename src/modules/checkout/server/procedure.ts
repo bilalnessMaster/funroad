@@ -6,6 +6,7 @@ import { TRPCError } from "@trpc/server";
 import type Stripe from "stripe";
 import { CheckoutMetadata, ProductMetadata } from "../types";
 import { stripe } from "@/lib/stripe";
+import { PLATFOR_FEE } from "@/lib/constant";
 export const checkoutRouter = createTRPCRouter({
   purchase: protectedProcedure.input(z.object({
     ids: z.array(z.string()).min(1),
@@ -62,7 +63,14 @@ export const checkoutRouter = createTRPCRouter({
         message: "Tenant not found"
       })
     }
-
+    if (!tenant.stripeDetailsSubmitted) {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: "Tenant not allowed to sell products"
+      })
+    }
+    const totalAmount = data.docs.reduce((acc, product) => acc += product.price * 100, 0)
+    const platformFeeAmount = Math.round( totalAmount * (PLATFOR_FEE / 100))
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = data.docs.map((product) => ({
       quantity: 1,
       price_data: {
@@ -90,8 +98,13 @@ export const checkoutRouter = createTRPCRouter({
       },
       metadata: {
         userId: ctx.session.user.id,
-      } as CheckoutMetadata
+      } as CheckoutMetadata,
+      payment_intent_data :{ 
+        application_fee_amount : platformFeeAmount
+      }
 
+    },{
+      stripeAccount : tenant.stripeAccountId
     })
 
     if (!checkout.url) {
@@ -146,5 +159,44 @@ export const checkoutRouter = createTRPCRouter({
       };
 
     }),
+  verify: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      const user = await ctx.db.findByID({
+        collection: "users",
+        depth: 0,
+        id: ctx.session.user.id
+      })
+      if (!user) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "User not found"
+        })
+      }
+      const tenantId = user.tenants?.[0]?.tenant as string;
 
+      const tenant = await ctx.db.findByID({
+        collection: "tenants",
+        id: tenantId
+      })
+      if (!tenant) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: "User not found"
+        })
+      }
+      const accoutLink = await stripe.accountLinks.create({
+        account: tenant.stripeAccountId,
+        refresh_url: `${process.env.NEXT_PUBLIC_APP_URL}/admin`,
+        return_url: `${process.env.NEXT_PUBLIC_APP_URL}/admin`,
+        type: "account_onboarding"
+      })
+      if (!accoutLink) {
+        throw new TRPCError({
+          code: 'BAD_GATEWAY',
+          message: "failed to create accountlink"
+        })
+      }
+
+      return { url: accoutLink.url }
+    })
 })

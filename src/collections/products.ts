@@ -14,7 +14,10 @@ export const Products: CollectionConfig = {
       return Boolean(tenant?.stripeDetailsSubmitted)
     },
     update: ({ req }) => isSuperAdmin(req.user)
-
+  },
+  admin: {
+    useAsTitle: "name",
+    description: "You have to verify your account before you create a product "
   },
   fields: [
     {
