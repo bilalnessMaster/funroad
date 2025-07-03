@@ -7,6 +7,7 @@ import type Stripe from "stripe";
 import { CheckoutMetadata, ProductMetadata } from "../types";
 import { stripe } from "@/lib/stripe";
 import { PLATFOR_FEE } from "@/lib/constant";
+import { generateTenantURL } from "@/lib/utils";
 export const checkoutRouter = createTRPCRouter({
   purchase: protectedProcedure.input(z.object({
     ids: z.array(z.string()).min(1),
@@ -93,10 +94,11 @@ export const checkoutRouter = createTRPCRouter({
         }
       }
     }))
+    let domain = generateTenantURL(input.tenantSlug);
     const checkout = await stripe.checkout.sessions.create({
       customer_email: ctx.session.user.email,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${input.tenantSlug}/checkout?success=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${input.tenantSlug}/checkout?cancel=true`,
+      success_url: `${domain}/checkout?success=true`,
+      cancel_url: `${domain}/checkout?cancel=true`,
       mode: "payment",
       line_items: lineItems,
       invoice_creation: {

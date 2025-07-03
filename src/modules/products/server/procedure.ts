@@ -144,9 +144,6 @@ export const productsRouter = createTRPCRouter({
               equals: input.category
             }
           },
-          select: {
-            content: false
-          }
         })
         const formatedData = categoriesData.docs.map((doc) => ({
           ...doc,
@@ -178,6 +175,9 @@ export const productsRouter = createTRPCRouter({
         depth: 2,
         where,
         sort,
+        select : { 
+          content : false
+        },
         page: input.cursor,
         limit: input.limit,
       })

@@ -17,12 +17,12 @@ const Page = async (props: Props) => {
   const queryClient = getQueryClient();
   void queryClient.prefetchInfiniteQuery(trpc.products.getMany.infiniteQueryOptions({
     ...filters,
-    limit : DEFAULT_LIMIT, 
+    limit: DEFAULT_LIMIT,
   }))
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-    <ProductListView />
-  </HydrationBoundary >)
+      <ProductListView />
+    </HydrationBoundary >)
 
 }
 
