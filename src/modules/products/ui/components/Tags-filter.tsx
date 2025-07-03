@@ -3,7 +3,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useTRPC } from "@/trpc/client";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { LoaderIcon } from "lucide-react";
-import { useProductFilters } from "../../hooks/use-products-filters";
 import { DEFAULT_LIMIT } from "@/lib/constant";
 
 

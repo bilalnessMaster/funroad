@@ -1,6 +1,8 @@
 
 import { isSuperAdmin } from '@/lib/access';
 import { Tenant } from '@/payload-types';
+import { lexicalEditor, UploadFeature } from '@payloadcms/richtext-lexical';
+import { Play } from 'next/font/google';
 import type { CollectionConfig } from 'payload'
 
 export const Products: CollectionConfig = {
@@ -13,7 +15,7 @@ export const Products: CollectionConfig = {
       const tenant = req.user?.tenants?.[0]?.tenant as Tenant;
       return Boolean(tenant?.stripeDetailsSubmitted)
     },
-    update: ({ req }) => isSuperAdmin(req.user)
+    update: ({ req }) => true
   },
   admin: {
     useAsTitle: "name",
@@ -27,7 +29,7 @@ export const Products: CollectionConfig = {
     },
     {
       name: 'description',
-      type: "text",
+      type: "richText",
 
     },
     {
@@ -63,10 +65,48 @@ export const Products: CollectionConfig = {
     },
     {
       name: "content",
-      type: "textarea",
+      editor : lexicalEditor({
+        features({ defaultFeatures}) {
+         return [
+           ...defaultFeatures, 
+            UploadFeature({
+              collections : {
+                 media : {
+                  fields : [
+                    {
+                      name : "alt",
+                      type : "text"
+                    }
+                  ]
+                }
+              }
+            })
+         ]   
+        },
+      }),
+      type: "richText",
       admin: {
         description: 'Protect content only visible to customer whne they purchase a product '
       }
+    },
+    {
+      name: "isArchived",
+      label: "Archive",
+      type: "checkbox",
+      defaultValue: false,
+      admin: {
+        description: "Check if you want to hide this product ",
+      }
+    },
+    {
+      name: "isPrivate",
+      label: "Private",
+      type: "checkbox",
+      defaultValue: false,
+      admin: {
+        description: "Product only visible on the tenant store",
+      }
     }
+
   ],
 }
