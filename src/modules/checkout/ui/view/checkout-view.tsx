@@ -20,7 +20,7 @@ const CheckoutView = ({ tenantSlug }: Props) => {
   const router = useRouter()
   const [states, setStates] = useCheckoutStates()
   const QueryClient = useQueryClient()
-  const { productIds, clearCart , removeProduct } = useCart(tenantSlug);
+  const { productIds, clearCart, removeProduct } = useCart(tenantSlug);
   const trpc = useTRPC()
   const { data, error, isPending } = useQuery(trpc.checkout.getProducts.queryOptions({
     ids: productIds,
@@ -36,7 +36,7 @@ const CheckoutView = ({ tenantSlug }: Props) => {
     },
     onError: (error) => {
       if (error?.data?.code === 'UNAUTHORIZED') {
-        router.push('/sign-in')
+        router.push(`${process.env.NEXT_PUBLIC_APP_URL}/sign-in`)
       }
       toast.error(error.message)
     }
@@ -49,11 +49,12 @@ const CheckoutView = ({ tenantSlug }: Props) => {
       QueryClient.invalidateQueries(trpc.library.getMany.infiniteQueryFilter())
       router.push('/library')
     }
-  }, [states.success, QueryClient , trpc.library.getMany])
+  }, [states.success, QueryClient, trpc.library.getMany])
 
   useEffect(() => {
     if (error?.data?.code === "NOT_FOUND") {
       clearCart();
+
       toast.warning("Invalid products found, cart cleared")
     }
 

@@ -18,7 +18,7 @@ interface Props {
 
 const ProductList = ({ category, tenantSlug, narrowview }: Props) => {
   const trpc = useTRPC();
-  console.log(tenantSlug)
+  // console.log(tenantSlug)
   const [filters] = useProductFilters();
   const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useSuspenseInfiniteQuery(trpc.products.getMany.infiniteQueryOptions({
     category,
@@ -26,9 +26,12 @@ const ProductList = ({ category, tenantSlug, narrowview }: Props) => {
     tenantSlug,
     limit: DEFAULT_LIMIT
   }, {
-    getNextPageParam: (lastPage) => lastPage.docs.length > 0 ? lastPage.nextPage : undefined
+    getNextPageParam: (lastPage) => {
 
-  }))
+      // console.log("this is the product list ", lastPage)
+      return lastPage.docs.length > 0 ? lastPage.nextPage : undefined
+    }
+    }))
   if (data.pages?.[0]?.docs.length == 0) {
     return (
       <div className="border border-black border-dashed flex items-center justify-center p-8 flex-col gap-y-4 bg-white w-full rounded-lg">
