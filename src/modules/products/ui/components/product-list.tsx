@@ -35,9 +35,6 @@ const ProductList = ({ category, tenantSlug, narrowview }: Props) => {
         <InboxIcon />
         <p className="text-base font-medium ">No products found</p>
       </div>
-
-
-
     )
   }
   return (

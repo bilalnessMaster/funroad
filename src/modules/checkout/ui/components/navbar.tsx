@@ -1,26 +1,11 @@
 
 'use client'
 
-import { useTRPC } from "@/trpc/client";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import Image from 'next/image'
 import { generateTenantURL } from "@/lib/utils";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { Loader } from "lucide-react";
 
-const CheckoutButton = dynamic(
-  () => import("../../../checkout/ui/components/checkout-button").then(
-    (mod) => mod.CheckoutButton
-  ),
-  {
-    ssr: false,
-    loading: () => <Button disabled className="bg-white" variant={'elevated'}>
-      <Loader className="animate-spin" />
-    </Button>
-  }
-)
+
 
 
 

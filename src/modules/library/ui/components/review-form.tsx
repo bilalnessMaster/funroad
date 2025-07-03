@@ -24,7 +24,7 @@ const formSchema = z.object({
 })
 
 export const ReviewForm = ({ productId, initialData }: Props) => {
-  console.log("this is the initial date for review",initialData)
+  console.log("this is the initial date for review", initialData)
   const trpc = useTRPC()
   const queryClient = useQueryClient()
   const [isPreview, setIsPreview] = useState(!!initialData)
@@ -147,6 +147,35 @@ export const ReviewForm = ({ productId, initialData }: Props) => {
 
     </Form>
 
+
+  )
+}
+
+
+export const ReviewFormSkeleton = () => {
+
+  return (
+    <form
+      className="flex flex-col gap-y-4 "
+    >
+      <p className="font-medium">
+        liked it ? give a review"
+      </p>
+      <StarPicker disabled />
+      <Textarea placeholder="Want to leave a written reveiw" disabled />
+
+      <Button
+        variant={'elevated'}
+        disabled
+        type="submit"
+        size={'lg'}
+        className="bg-black text-white hover:bg-pink-400 hover:text-primary w-fit"
+      >
+
+        "Post review"
+
+      </Button>
+    </form>
 
   )
 }

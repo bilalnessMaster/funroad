@@ -20,7 +20,7 @@ const CheckoutView = ({ tenantSlug }: Props) => {
   const router = useRouter()
   const [states, setStates] = useCheckoutStates()
   const QueryClient = useQueryClient()
-  const { productIds, clearCart, clearAllCarts, removeProduct } = useCart(tenantSlug);
+  const { productIds, clearCart , removeProduct } = useCart(tenantSlug);
   const trpc = useTRPC()
   const { data, error, isPending } = useQuery(trpc.checkout.getProducts.queryOptions({
     ids: productIds,

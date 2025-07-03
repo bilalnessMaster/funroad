@@ -10,8 +10,10 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { CheckCheckIcon, Link2, Loader, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { RichText } from '@payloadcms/richtext-lexical/react'
 // import { CartButton } from "../components/cart-button";
 
 const CartButton = dynamic(
@@ -35,7 +37,8 @@ interface Props {
 
 
 const ProductView = ({ productId, tenantSlug }: Props) => {
-  const [isCopied , setIsCopied] = useState(false)
+  const router = useRouter()
+  const [isCopied, setIsCopied] = useState(false)
   const trpc = useTRPC()
 
   const { data: product } = useSuspenseQuery(trpc.products.getOne.queryOptions({
@@ -102,7 +105,7 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
             <div className="p-6 ">
               {
                 product.description ? (
-                  <p> {product.description}</p>
+                  <RichText data={product.description} />
                 ) :
                   (
                     <p className="font-medium text-muted-foreground italic">No description procided</p>
@@ -119,14 +122,14 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
                     variant={"elevated"}
                     className=""
                     disabled={isCopied}
-                    onClick={()=>{
+                    onClick={() => {
                       navigator.clipboard.writeText(window.location.href);
-                     setIsCopied(true) 
+                      setIsCopied(true)
                       toast.success("copied to your clipboard")
-                      setTimeout(()=>setIsCopied(false), 2000)
+                      setTimeout(() => setIsCopied(false), 2000)
                     }}
                   >
-                  {isCopied ? <CheckCheckIcon className="size-4"/> : <Link2 className="size-4" /> }
+                    {isCopied ? <CheckCheckIcon className="size-4" /> : <Link2 className="size-4" />}
                   </Button>
                 </div>
                 <p className="text-center font-medium ">
@@ -142,7 +145,7 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
                   <h3 className="text-xl fonnt-medium ">Ratings</h3>
                   <div className="flex items-center gap-x-1 font-medium">
                     <StarIcon className="size-4 fill-black" />
-                    <p>({product.reviewsCount})</p> 
+                    <p>({product.reviewsCount})</p>
                     <p className="text-base">{product.reviewsRating} ratings</p>
 
                   </div>
@@ -152,18 +155,19 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
                 >
                   {
                     [5, 4, 3, 2, 1].map((star) => {
-                      const reviewsPerStar = product.reviews.docs.reduce((acc , review)=>review.rating === star ? acc+=1: acc,0)
-                      const reviewPercentage  = (reviewsPerStar /product.reviewsCount)*100 
-                       
+                      const reviewsPerStar = product.reviews.docs.reduce((acc, review) => review.rating === star ? acc += 1 : acc, 0)
+                      const reviewPercentage = (reviewsPerStar / product.reviewsCount) * 100
+
                       return (
-                      <Fragment key={star}>
-                        <div className="font-medium">
-                          {star} {star === 1 ? "star" : "stars"}
-                        </div>
-                        <Progress value={reviewPercentage} className="h-[1lh]" />
-                        <div>{reviewPercentage}%</div>
-                      </Fragment>
-                    )}
+                        <Fragment key={star}>
+                          <div className="font-medium">
+                            {star} {star === 1 ? "star" : "stars"}
+                          </div>
+                          <Progress value={reviewPercentage} className="h-[1lh]" />
+                          <div>{reviewPercentage}%</div>
+                        </Fragment>
+                      )
+                    }
                     )
                   }
                 </div>
@@ -178,3 +182,18 @@ const ProductView = ({ productId, tenantSlug }: Props) => {
 
 
 export default ProductView;
+
+
+export const ProductViewSkeleton = () => {
+  return (
+    <div className="px-4 lg:px-12 py-10">
+      <div className="border rounded-sm bg-white overflow-hidden ">
+        <div className="relative aspect-[3.9] borde-b">
+          <div
+            className="w-full h-full animate-pulse"
+          />
+        </div>
+      </div>
+    </div>
+  )
+}

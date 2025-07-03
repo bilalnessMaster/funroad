@@ -31,6 +31,12 @@ export const checkoutRouter = createTRPCRouter({
             "tenant.slug": {
               equals: input.tenantSlug
             }
+          },
+          {
+            isArchived: {
+              not_equals: true
+
+            }
           }
         ]
 
@@ -70,7 +76,7 @@ export const checkoutRouter = createTRPCRouter({
       })
     }
     const totalAmount = data.docs.reduce((acc, product) => acc += product.price * 100, 0)
-    const platformFeeAmount = Math.round( totalAmount * (PLATFOR_FEE / 100))
+    const platformFeeAmount = Math.round(totalAmount * (PLATFOR_FEE / 100))
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = data.docs.map((product) => ({
       quantity: 1,
       price_data: {
@@ -99,12 +105,12 @@ export const checkoutRouter = createTRPCRouter({
       metadata: {
         userId: ctx.session.user.id,
       } as CheckoutMetadata,
-      payment_intent_data :{ 
-        application_fee_amount : platformFeeAmount
+      payment_intent_data: {
+        application_fee_amount: platformFeeAmount
       }
 
-    },{
-      stripeAccount : tenant.stripeAccountId
+    }, {
+      stripeAccount: tenant.stripeAccountId
     })
 
     if (!checkout.url) {
@@ -132,9 +138,19 @@ export const checkoutRouter = createTRPCRouter({
         },
         pagination: false,
         where: {
-          id: {
-            in: input.ids
-          }
+          and: [
+            {
+              id: {
+                in: input.ids
+              }
+            },
+            {
+              isArchived: {
+                not_equals: true
+              }
+            }
+          ]
+
         }
       })
       if (data.totalDocs !== input.ids.length) {
