@@ -7,6 +7,10 @@ import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { SearchParams } from "nuqs";
 
 
+
+
+export const dynamic =  "force-dynamic"
+
 interface Props {
   searchParams: Promise<SearchParams>
 }
