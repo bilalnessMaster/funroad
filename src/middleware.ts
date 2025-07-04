@@ -5,12 +5,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 export default async function middleware(req: NextRequest) {
 
-  console.log("middlware request 😄 ", req);
+  console.log("middlware request 😄 ", req.headers.get("host"));
   const url = req.nextUrl // master.bilalroad.com 
 
 
   const hostname = req.headers.get("host") || "";
 
+  const dn = "admin.funroad-rho.vercel.app" 
+  const tenantSlugs = dn.split(".")[0]
+  console.log(tenantSlugs)
   const domain = process.env.NEXT_PUBLIC_ROOT_DOMAIN || '';
   if (hostname.includes(`.${domain}`)) {
     const tenantSlug = hostname.replace(`.${domain}`, '')
@@ -23,7 +26,7 @@ export default async function middleware(req: NextRequest) {
 
 
 export const config = {
-  matcher : [
+  matcher: [
     "/((?!api/|_next/|_static/|_vercel|media/|[\w-]+\.\w+).*)"
   ]
 

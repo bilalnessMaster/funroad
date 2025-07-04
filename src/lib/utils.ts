@@ -7,7 +7,8 @@ export function cn(...inputs: ClassValue[]) {
 
 
 export const generateTenantURL = (tenantSlug: string) => {
-
+// this because I can use the subdomain on vercel (I dont have the domain to try on)
+    return `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${tenantSlug}`
 
   if (process.env.NODE_ENV === 'development') {
     return `${process.env.NEXT_PUBLIC_APP_URL}/tenant/${tenantSlug}`
