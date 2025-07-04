@@ -20,6 +20,7 @@ import { SearchParams } from "nuqs";
 
 
 
+export const dynamic =  "force-dynamic"
 
 const Page = async (props: Props) => {
   const params = await props.params;

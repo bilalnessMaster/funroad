@@ -1,5 +1,7 @@
 import CheckoutView from "@/modules/checkout/ui/view/checkout-view";
 
+export const dynamic =  "force-dynamic"
+
 interface Props   {
  params : Promise<{slug: string }> ; 
 
