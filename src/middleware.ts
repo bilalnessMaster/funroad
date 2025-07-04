@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export default async function middleware(req: NextRequest) {
 
-  //  console.log("headres 😄 ", req);
+  console.log("middlware request 😄 ", req);
   const url = req.nextUrl // master.bilalroad.com 
 
 
